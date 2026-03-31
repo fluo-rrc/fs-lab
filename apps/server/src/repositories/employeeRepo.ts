@@ -1,22 +1,36 @@
-import { organizationData, Department } from "../data/organizationData";
-
-let tempOrgData: Department[] = [...organizationData];
+import prisma from "../db";
 
 export const employeeRepo = {
-  getDepartments: () => {
-    return tempOrgData;
+  getDepartments: async () => {
+    // Fetch all departments and attach their related employees
+    return await prisma.department.findMany({
+      include: {
+        employees: true,
+      },
+    });
   },
 
-  createEmployee: (firstName: string, lastName: string, deptName: string) => {
-    tempOrgData = tempOrgData.map((dept) => {
-      if (dept.name === deptName) {
-        return {
-          ...dept,
-          employees: [...dept.employees, { firstName, lastName }],
-        };
-      }
-      return dept;
+  createEmployee: async (
+    firstName: string,
+    lastName: string,
+    deptName: string,
+  ) => {
+    // Create the new employee and link them to the department by its unique name
+    await prisma.employee.create({
+      data: {
+        firstName,
+        lastName,
+        department: {
+          connect: { name: deptName },
+        },
+      },
     });
-    return tempOrgData;
+
+    // Return the updated list of departments to match your old app behavior
+    return await prisma.department.findMany({
+      include: {
+        employees: true,
+      },
+    });
   },
 };

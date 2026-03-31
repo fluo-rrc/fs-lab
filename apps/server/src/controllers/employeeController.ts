@@ -2,24 +2,36 @@ import { Request, Response } from "express";
 import { employeeService } from "../services/employeeService";
 
 export const employeeController = {
-  getDepartments: (req: Request, res: Response) => {
-    const data = employeeService.getDepartments();
-    res.json(data);
+  getDepartments: async (req: Request, res: Response) => {
+    try {
+      // Await the service
+      const data = await employeeService.getDepartments();
+      res.json(data);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to fetch departments" });
+    }
   },
 
-  createEmployee: (req: Request, res: Response) => {
-    const { firstName, lastName, deptName } = req.body;
+  createEmployee: async (req: Request, res: Response) => {
+    try {
+      const { firstName, lastName, deptName } = req.body;
 
-    const result = employeeService.createEmployee(
-      firstName,
-      lastName,
-      deptName,
-    );
+      // Await the service
+      const result = await employeeService.createEmployee(
+        firstName,
+        lastName,
+        deptName,
+      );
 
-    if (result.success) {
-      res.status(201).json({ message: "Employee created" });
-    } else {
-      res.status(400).json({ error: result.error });
+      if (result.success) {
+        res.status(201).json({ message: "Employee created" });
+      } else {
+        res.status(400).json({ error: result.error });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to create employee" });
     }
   },
 };

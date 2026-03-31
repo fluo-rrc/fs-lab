@@ -1,12 +1,18 @@
 import { employeeRepo } from "../repositories/employeeRepo";
 
 export const employeeService = {
-  getDepartments: () => {
-    return employeeRepo.getDepartments();
+  getDepartments: async () => {
+    // Await the database call
+    return await employeeRepo.getDepartments();
   },
 
-  createEmployee: (firstName: string, lastName: string, deptName: string) => {
-    const departments = employeeRepo.getDepartments();
+  createEmployee: async (
+    firstName: string,
+    lastName: string,
+    deptName: string,
+  ) => {
+    // Await the database call to check existing departments
+    const departments = await employeeRepo.getDepartments();
     const departmentExists = departments.some((d) => d.name === deptName);
 
     if (!departmentExists)
@@ -17,7 +23,8 @@ export const employeeService = {
         error: "First Name must have at least three characters.",
       };
 
-    employeeRepo.createEmployee(firstName, lastName, deptName);
+    // Await the creation of the new employee
+    await employeeRepo.createEmployee(firstName, lastName, deptName);
     return { success: true };
   },
 };
