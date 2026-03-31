@@ -1,8 +1,14 @@
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import { organizationData } from "../src/data/organizationData";
 import { leadershipData } from "../src/data/leadershipData";
 
-const prisma = new PrismaClient();
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log("Seeding database...");
@@ -12,7 +18,6 @@ async function main() {
     await prisma.department.create({
       data: {
         name: dept.name,
-        // Prisma is smart enough to create the related employees at the same time
         employees: {
           create: dept.employees.map((emp) => ({
             firstName: emp.firstName,
