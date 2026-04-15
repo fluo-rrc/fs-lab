@@ -1,26 +1,36 @@
-import { useState, useEffect } from "react";
 import DepartmentComponent from "../components/employees/Department";
 import EmployeeForm from "../components/employees/EmployeeForm";
 import { employeeService } from "../services/employeeService";
-import type { Department } from "../types/types";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function EmployeesPage() {
-  const [data, setData] = useState<Department[]>([]);
+  const queryClient = useQueryClient();
 
-  // Create a helper to load data from the network
-  const loadData = async () => {
-    const freshData = await employeeService.getDepartments();
-    setData(freshData);
-  };
-
-  // Run once when the component mounts
-  useEffect(() => {
-    loadData();
-  }, []);
+  // TanStack Query handles fetching, caching, loading, and error states
+  const {
+    data = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["departments"],
+    queryFn: () => employeeService.getDepartments(),
+  });
 
   const handleAddSuccess = () => {
-    loadData(); // Re-fetch from the server when a new employee is added
+    // Tells TanStack Query the current cache is stale and needs to be refetched
+    queryClient.invalidateQueries({ queryKey: ["departments"] });
   };
+
+  // Optional: Clean loading and error states handled automatically
+  if (isLoading) {
+    return <div className="p-8 text-center text-gray-600">Loading data...</div>;
+  }
+
+  if (isError) {
+    return (
+      <div className="p-8 text-center text-red-500">Failed to load data.</div>
+    );
+  }
 
   return (
     <main className="container mx-auto p-8 max-w-7xl">
