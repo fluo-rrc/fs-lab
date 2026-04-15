@@ -1,3 +1,9 @@
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
 import logo from "../../assets/logo.png";
 import { Link, NavLink } from "react-router-dom";
 
@@ -31,6 +37,15 @@ export default function Nav() {
           <NavLink to="/organization" className={linkClass}>
             Organization
           </NavLink>
+
+          <SignedOut>
+            <div className="bg-blue-600 text-white px-4 py-2 rounded font-medium hover:bg-blue-700">
+              <SignInButton mode="modal" />
+            </div>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
       </div>
     </nav>
