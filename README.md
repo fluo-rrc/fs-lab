@@ -73,3 +73,21 @@ export default defineConfig([
   },
 ])
 ```
+
+## Lab 5.2; New Feature
+
+### **What change you want(ed) to make in your application**
+
+I wanted to upgrade the way the React application handles fetching and storing data from the backend. Initially, the app relied on standard React hooks like useState and useEffect to manually trigger network requests. My goal was to refactor this manual fetching process to use a dedicated server-state management tool, which automatically handles caching, background updates, and loading states without writing messy boilerplate code.
+
+### **What tool or tools you've made use of to make this change**
+
+To implement this feature, I integrated TanStack Query (formerly known as React Query) into the frontend React application. This involved installing the @tanstack/react-query npm package, wrapping the application root in a QueryClientProvider to manage the cache globally, and replacing my custom fetch logic with the useQuery hook. This hook takes a unique query key and an asynchronous fetching function, handling the entire lifecycle of the data request.
+
+### **How this change affects the user experience**
+
+This change significantly improves the user experience by making the application feel much faster and more responsive. Because TanStack Query caches the data, users won't see a loading spinner every time they navigate away from the employee list and come back. The data loads instantly from the cache while the library silently checks the server for updates in the background, ensuring they always have fresh data without disruptive loading screens.
+
+### **How this change affects your understanding, or conceptualization, of the app**
+
+Implementing this feature fundamentally shifted how I think about state management in React. I learned that there is a strict difference between "client state" (like whether a modal is open or a dropdown is toggled) and "server state" (data that lives in a database and is fetched via an API). Treating server state as a cache rather than local component state makes the code cleaner and the application architecture much more robust.
